@@ -107,32 +107,26 @@ class DirtyRoot():
         incourt=[]
         for c in self.Courts:
             if not c.empty():
-                incourt.append(c.game)
+                incourt.append(c.match)
 
         for m in udm:
             if m.editable() and (m not in incourt):
                 wm.append(m)
         return wm
 
-    def courtbut_exist(self, courtbut):
-        if courtbut not in self.mainwin.courtbuttons:
-            return None
-        else:
-            return self.mainwin.courtbuttons.index(courtbut)
-
     def askcourtlabel(self, courtbut):
         if courtbut not in self.mainwin.courtbuttons:
             raise WrongActError("Asked Court Does Not Exist")
         else:
-            courtnum=self.mainwin.courtbuttons.index(courtbut)
-            returnstr="Court {0}\n".format(courtnum+1)
+            courtnum=courtbut.court.courtnum
+            returnstr="Court {0}\n".format(courtnum)
 
-            if not self.Courts[courtnum].empty():
-                c=self.Courts[courtnum].game
+            if not courtbut.court.empty():
+                match=courtbut.court.match
                 returnstr+="Match#{4}\n{0}({1})\nvs.\n{2}({3})".\
-                        format(c.player[0].name(sep='\n'), \
-                        c.score[0], c.player[1].name(sep="\n"), c.score[1],\
-                        c.matchNum)
+                        format(match.player[0].name(sep='\n'), \
+                        match.score[0], match.player[1].name(sep="\n"), match.score[1],\
+                        match.matchNum)
 
             return returnstr
 

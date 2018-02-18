@@ -143,7 +143,8 @@ class MainWindow(QMainWindow, form_class):
             QMessageBox.about(self, "WrongActError", ex)
 
         for i in range(len(self.root.Courts)):
-            thisCourt=CourtButton(self.root, self.buttonsize, self.pointsize)
+            thisCourt=CourtButton(self.root, self.root.Courts[i],\
+                                     self.buttonsize, self.pointsize)
             self.courtbuttons.append(thisCourt)
             thisCourt.move(self.courtGrid, i%2, i//2)
             thisCourt.setlabel()

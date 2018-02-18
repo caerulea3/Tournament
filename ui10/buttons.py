@@ -8,15 +8,17 @@ from PyQt5 import uic
 
 class CourtButton():
     """Basic Design"""
-    def __init__(self, root, size=(50, 75), point=9):
+    def __init__(self, root, court, size=(50, 75), point=9):
         self.root=root
         self.button=QPushButton(root.mainwin)
         self.button.clicked.connect(self.popup)
-        self.updateDesign(size, point)
+        self.size=size
+        self.point=point
+        self.updateDesign(newsize=size, newpoint=point)
+        self.court=court
 
     def setlabel(self):
         self.button.setText(self.root.askcourtlabel(self))
-        self.updateDesign()
 
     def updateDesign(self, newsize=None, newpoint=None):
         if newsize is not None:
@@ -29,6 +31,9 @@ class CourtButton():
         font.setPointSize(self.point)
         self.button.setFont(font)
 
+    def court(self):
+        return self.court
+
     def move(self, grid, x, y):
         grid.addWidget(self.button, x, y)
 
@@ -38,20 +43,11 @@ class CourtButton():
     def hide(self):
         self.button.hide()
 
-    def courtnum(self):
-        return self.root.courtbut_exist(self)+1
-
-    def court(self):
-        return self.root.Courts[self.courtnum()-1]
-
-    def empty(self):
-        return self.court().empty()
-
     def popup(self):
         # self.dia=QMessageBox()
         # self.dia.about(self.dia,"Court Popup", "Court Popup about Court {0}".\
         #                                     format(self.courtNum))
-        if self.empty():
+        if self.court.empty():
             self.setDia=CourtSetDialog(self.root, self)
             self.setDia.show()
             self.setDia.exec_()
@@ -105,7 +101,7 @@ class CourtSetDialog(QDialog, csform):
             return
         idx=self.singlewaiting.selectedIndexes()[0].row()
         match=self.root.waitingmatches(self.root.SingleRoot)[idx]
-        self.courtbut.court().setgame(match)
+        self.courtbut.court.setgame(match)
         self.done(1)
 
     def setDoubles(self):
@@ -114,7 +110,7 @@ class CourtSetDialog(QDialog, csform):
             return
         idx=self.doublewaiting.selectedIndexes()[0].row()
         match=self.root.waitingmatches(self.root.DoubleRoot)[idx]
-        self.courtbut.court().setgame(match)
+        self.courtbut.court.setgame(match)
         self.done(1)
 
 cdform=uic.loadUiType("./ui10/UI_courtLabel.ui")[0]
@@ -143,8 +139,8 @@ class CourtDialog(cdform, QDialog):
         self.setupUi(self)
         self.root=root
         self.courtbut=courtbut
-        self.match=self.courtbut.court().game
-        self.courtNum=self.courtbut.courtnum()
+        self.match=self.courtbut.court.match
+        self.courtNum=self.courtbut.court.courtnum
         self.setButton()
         self.setLabel()
 
@@ -196,7 +192,7 @@ class CourtDialog(cdform, QDialog):
 
         if reply==QMessageBox.Yes:
             self.match.score=[0, 0]
-            self.courtbut.court().game=None
+            self.courtbut.court.match=None
             self.courtbut.match=None
             self.courtbut.setlabel()
             self.done(2)
@@ -209,8 +205,10 @@ class CourtDialog(cdform, QDialog):
         scr1=self.match.score[0], scr2=self.match.score[1]))
         reply=check.exec_()
         if reply==1:
-            self.courtbut.court().clear_court()
+            self.courtbut.court.clear_court()
             self.done(0)
+        else:
+            self.done(1)
 
 edform=csform=uic.loadUiType("./ui10/UI_courtEndDialog.ui")[0]
 class CourtEndDialog(edform, QDialog):

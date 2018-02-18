@@ -53,9 +53,9 @@ class Root(DirtyRoot):
 
         #Make MatchSequence
         if self.SingleRoot is not None and len(self.SingleSequence)==0:
-            SingleSequence=makeseq(self.SingleRoot)
+            self.SingleSequence=makeseq(self.SingleRoot)
         if self.DoubleRoot is not None and len(self.DoubleSequence)==0:
-            DoubleSequence=makeseq(self.DoubleRoot)
+            self.DoubleSequence = makeseq(self.DoubleRoot)
 
 
     """Control Functions"""
@@ -78,12 +78,15 @@ class Root(DirtyRoot):
 
     def changecourtnum(self, newcourtnum):
         while len(self.Courts)!=newcourtnum:
-            if len(self.Courts)!=0 and len(self.Courts)>newcourtnum and self.Courts[-1].empty():
+            if len(self.Courts)!=0 and len(self.Courts)>newcourtnum \
+                                   and self.Courts[-1].empty():
                 self.Courts[-1].pop()
-            if len(self.Courts)!=0 and len(self.Courts)>newcourtnum and (not self.Courts[-1].empty()):
-                raise WrongActError("{0}번 코트는 경기가 진행중입니다!".format(len(self.Courts)+1))
+            if len(self.Courts)!=0 and len(self.Courts)>newcourtnum \
+                                   and (not self.Courts[-1].empty()):
+                raise WrongActError("{0}번 코트는 경기가 진행중입니다!"\
+                                    .format(len(self.Courts)+1))
             if len(self.Courts)<newcourtnum:
-                self.Courts.append(Court())
+                self.Courts.append(Court(len(self.Courts)+1))
 
     def setmainwin(self, win):
         self.mainwin=win
